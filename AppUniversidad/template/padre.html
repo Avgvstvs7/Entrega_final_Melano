@@ -23,7 +23,9 @@
                 <a class="btn btn-primary" href="{% url 'home' %}">Home</a>
                 <a class="btn btn-primary" href="{% url 'cursos' %}">Cursos</a>
                 <a class="btn btn-primary" href="{% url 'alumnos' %}">Alumnos</a>
-                <a class="btn btn-primary" href="">Profesores</a>
+                <a class="btn btn-primary" href="{% url 'profesores' %}">Profesores</a>
+                <a class="btn btn-primary" href="http://127.0.0.1:8000/AppUniversidad/buscar_curso"><button>BUSCAR CURSO</button></a>
+                
 
             </div>
         </nav>
@@ -31,6 +33,7 @@
         <header class="masthead">
             <div class="container position-relative">
                 <h1 class="text-center" style="color:white"> Universidad X </h1>
+            
 
             </div>
         </header>
@@ -42,6 +45,8 @@
         {% endblock %}
 
         <!--FIN MI CONTENIDO-->
+
+        
 
         <!-- Footer-->
         <footer class="footer bg-light">
