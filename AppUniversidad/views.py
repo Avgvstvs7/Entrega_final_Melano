@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
-from AppUniversidad.models import Curso
 from django.http import HttpResponse
 from django.template import loader
+from AppUniversidad.models import Curso
 from AppUniversidad.forms import Curso_formulario
 from AppUniversidad.models import Alumno
 from AppUniversidad.models import Profesor
 from AppUniversidad.forms import alumno_formulario_alta
 from AppUniversidad.forms import profesor_formulario_alta
+from django.contrib.auth.forms import AuthenticationForm , UserCreationForm
+from django.contrib.auth import login, authenticate
 
 
 
@@ -248,3 +250,46 @@ def editar_profesor(request , id):
         mi_formulario = profesor_formulario_alta(initial={"profesor_id":profesor_id.profesor_id , "curso_id":profesor_id.curso_id})
     
     return render( request , "editar_profesor.html" , {"mi_formulario": mi_formulario , "profesor_id": profesor_id})
+
+
+
+
+def login_request(request):
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+
+        if form.is_valid():
+
+            usuario = form.cleaned_data.get("username")
+            contra = form.cleaned_data.get("password")
+
+            user = authenticate(username=usuario , password=contra)
+
+            if user is not None:
+                login(request , user )
+                return render( request , "inicio.html" , {"mensaje":f"Bienvenido/a {usuario}", "usuario":usuario})
+            else:
+                return HttpResponse(f"No se encontró el usuario")
+        else: 
+            return HttpResponse(f"FORM INCORRECTO {form}")
+
+
+    form = AuthenticationForm()
+    return render( request , "login.html" , {"form":form})
+
+
+
+
+def register(request):
+    
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Usuario creado")
+
+    else:
+        form = UserCreationForm()
+    return render(request , "registro.html" , {"form":form})

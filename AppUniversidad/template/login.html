@@ -1,0 +1,15 @@
+{% extends "padre.html" %}
+
+{% load static %}
+
+
+{% block contenido %}
+
+    <h2>Por favor, ingrese sus datos</h2>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button>Confirmar</button>
+    </form>
+
+{% endblock %}
