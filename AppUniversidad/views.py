@@ -2,14 +2,14 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
 from AppUniversidad.models import Curso
-from AppUniversidad.forms import Curso_formulario
+from AppUniversidad.forms import Curso_formulario, UserEditForm
 from AppUniversidad.models import Alumno
 from AppUniversidad.models import Profesor
 from AppUniversidad.forms import alumno_formulario_alta
 from AppUniversidad.forms import profesor_formulario_alta
 from django.contrib.auth.forms import AuthenticationForm , UserCreationForm
 from django.contrib.auth import login, authenticate
-
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -18,13 +18,6 @@ from django.contrib.auth import login, authenticate
 def inicio(request):
     return render( request , "padre.html")
 
-
-
-# def alta_curso(request,nombre):
-#     curso = Curso(nombre=nombre , camada=234512)
-#     curso.save()
-#     texto = f"Se guardo en la BD el curso: {curso.nombre} {curso.camada}"
-#     return HttpResponse(texto)
 
 
 def ver_cursos(request):
@@ -68,7 +61,7 @@ def buscar(request):
     else:
         return HttpResponse("Ingrese el nombre del curso")
     
-
+@login_required
 def elimina_curso(request , id ):
     curso = Curso.objects.get(id=id)
     curso.delete()
@@ -79,7 +72,7 @@ def elimina_curso(request , id ):
 
 
 
-
+@login_required
 def editar(request , id):
 
     curso = Curso.objects.get(id=id)
@@ -142,7 +135,7 @@ def alumno_formulario(request):
     return render(request, "alumno_formulario.html", {'form': mi_alumno_formulario})
 
 
-
+@login_required
 def elimina_alumno(request , id ):
     alumno_id = Alumno.objects.get(id=id)
     alumno_id.delete()
@@ -153,7 +146,7 @@ def elimina_alumno(request , id ):
 
 
 
-
+@login_required
 def editar_alumno(request , id):
 
     alumno_id = Alumno.objects.get(id=id)
@@ -215,7 +208,7 @@ def profesores_formulario(request):
 
 
 
-
+@login_required
 def elimina_profesor(request , id ):
     profesor_id = Profesor.objects.get(id=id)
     profesor_id.delete()
@@ -226,7 +219,7 @@ def elimina_profesor(request , id ):
 
 
 
-
+@login_required
 def editar_profesor(request , id):
 
     profesor_id = Profesor.objects.get(id=id)
@@ -293,3 +286,27 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request , "registro.html" , {"form":form})
+
+
+
+def editarPerfil(request):
+
+    usuario = request.user
+
+    if request.method == "POST":
+        
+        mi_formulario = UserEditForm(request.POST)
+
+        if mi_formulario.is_valid():
+
+            informacion = mi_formulario.cleaned_data
+            usuario.email = informacion["email"]
+            password = informacion["password1"]
+            usuario.set_password(password)
+            usuario.save()
+            return render(request , "inicio.html")
+
+    else:
+        miFormulario = UserEditForm(initial={"email":usuario.email})
+    
+    return render( request , "editar_perfil.html", {"miFormulario":miFormulario, "usuario":usuario})

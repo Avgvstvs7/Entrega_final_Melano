@@ -26,8 +26,11 @@
                 <a class="btn btn-primary" href="{% url 'profesores' %}">Profesores</a>
                 <a class="btn btn-primary" href="{% url 'Login' %}">Iniciar Sesion</a>
                 <a class="btn btn-primary" href="{% url 'Register' %}"">Registro</a>
-                <a class="btn btn-primary" href="http://127.0.0.1:8000/AppUniversidad/buscar_curso"><button>BUSCAR CURSO</button></a>
-                
+                <a class="btn btn-success" href="http://127.0.0.1:8000/AppUniversidad/buscar_curso"><button>BUSCAR CURSO</button></a>
+                <form method="post" action="{% url 'Logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
 
             </div>
         </nav>
