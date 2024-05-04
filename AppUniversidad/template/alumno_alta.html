@@ -2,19 +2,17 @@
 
 {% load static %}
 
-
 {% block contenido %}
-    <form action="alumno_alta" method="POST">
+    <form action="alta_alumno" method="POST">
         {% csrf_token %}
         <p>Nombre:</p>
-        <input type="text" name="nombre" required>
+        <input type="text" name="alumno_id" required>
         <p>Curso</p>
-        <input type="text" name="curso" required>
-        
+        <select name="curso_id" required>
+            {% for curso in form.curso_id.field.queryset %}
+                <option value="{{ curso.pk }}">{{ curso.nombre }}</option>
+            {% endfor %}
+        </select>
         <button>Enviar</button>
     </form>
-    
-
-
-
 {% endblock %}

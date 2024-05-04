@@ -18,13 +18,14 @@
                 </tr>            
             </thead>
             <tbody>
-                {% for n in nombre %}
+                {% for n in alumnos %}
                 <tr>
                     <td>{{n.id}}</td>
-                    <td>{{n.nombre}}</td>
-                    <td>{{n.curso}}</td>
-                    <td><a href="{% url 'elimina_nombre' n.id %}" class="btn btn-danger btn-sm">BORRAR</a></td>
-                    <td><a href="{% url 'editar_nombre'  n.id %}" class="btn btn-warning btn-sm">EDITAR</a></td>
+                    <td>{{n.alumno_id}}</td>
+                    <td>{{n.curso_id}}</td>
+                    <td><a href="{% url 'elimina_alumno' n.id %}" class="btn btn-danger btn-sm">BORRAR</a></td>
+                    <td><a href="{% url 'editar_alumno'  n.id %}" class="btn btn-warning btn-sm">EDITAR</a></td>
+
                 </tr>
 
                 {% endfor %}

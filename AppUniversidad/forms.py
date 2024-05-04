@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Profesor, Alumno
+from .models import Curso
 
 
 class Curso_formulario(forms.Form):
@@ -15,12 +15,24 @@ class Curso_formulario(forms.Form):
     camada = forms.IntegerField()
     
 
-class Profesor(forms.ModelForm):
-    class Meta:
-        model = Profesor
-        fields = ['profesor_id', 'curso_id']
 
-class Alumno(forms.ModelForm):
-    class Meta:
-        model = Alumno
-        fields = ['alumno_id', 'curso_id']
+class profesor_formulario_alta(forms.Form):
+    profesor_id = forms.CharField(label="Profesor",max_length=30)
+    curso_id = forms.ModelChoiceField(label="Curso", queryset=Curso.objects.all())
+
+    def clean_profesor_id(self):
+        profesor_id = self.cleaned_data.get('profesor_id')
+        if any(char.isdigit() for char in profesor_id):
+            raise ValidationError('El profesor_id no puede contener números')
+        return profesor_id
+
+        
+class alumno_formulario_alta(forms.Form):
+    alumno_id = forms.CharField(label="Alumno",max_length=30)
+    curso_id = forms.ModelChoiceField(label="Curso", queryset=Curso.objects.all())
+
+    def clean_alumno_id(self):
+        alumno_id = self.cleaned_data.get('alumno_id')
+        if any(char.isdigit() for char in alumno_id):
+            raise ValidationError('El alumno_id no puede contener números')
+        return alumno_id

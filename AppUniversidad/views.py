@@ -1,10 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from AppUniversidad.models import Curso
 from django.http import HttpResponse
 from django.template import loader
 from AppUniversidad.forms import Curso_formulario
 from AppUniversidad.models import Alumno
 from AppUniversidad.models import Profesor
+from AppUniversidad.forms import alumno_formulario_alta
+from AppUniversidad.forms import profesor_formulario_alta
 
 
 
@@ -16,11 +18,11 @@ def inicio(request):
 
 
 
-def alta_curso(request,nombre):
-    curso = Curso(nombre=nombre , camada=234512)
-    curso.save()
-    texto = f"Se guardo en la BD el curso: {curso.nombre} {curso.camada}"
-    return HttpResponse(texto)
+# def alta_curso(request,nombre):
+#     curso = Curso(nombre=nombre , camada=234512)
+#     curso.save()
+#     texto = f"Se guardo en la BD el curso: {curso.nombre} {curso.camada}"
+#     return HttpResponse(texto)
 
 
 def ver_cursos(request):
@@ -102,11 +104,20 @@ def editar(request , id):
 
 #VIEWS ALUMNOS
 
-def alta_alumno(request,alumno_id,curso_id):
-    alumno= Alumno(alumno_id= alumno , curso_id=curso_id)
-    alumno.save()
-    texto = f"Se guardo en la BD el alumno: {alumno_id.alumno} {curso_id.curso}"
-    return HttpResponse(texto)
+def alta_alumno(request):
+    if request.method == 'POST':
+        form = alumno_formulario_alta(request.POST)
+        if form.is_valid():
+            alumno_id = form.cleaned_data.get('alumno_id')
+            curso_id = form.cleaned_data.get('curso_id')
+            Alumno.objects.create(alumno_id=alumno_id, curso_id=curso_id)
+            return redirect('alta_alumno')
+        print(form.errors)
+    else:
+        form = alumno_formulario_alta()
+    return render(request, 'alumno_alta.html', {'form': form})
+
+
 
 def ver_alumnos(request):
     alumno = Alumno.objects.all()
@@ -114,6 +125,7 @@ def ver_alumnos(request):
     plantilla = loader.get_template("alumno_formulario.html")
     documento = plantilla.render(dicc)
     return HttpResponse(documento)
+
 
 def alumno_formulario(request):
     if request.method == "POST":
@@ -129,13 +141,56 @@ def alumno_formulario(request):
 
 
 
+def elimina_alumno(request , id ):
+    alumno_id = Alumno.objects.get(id=id)
+    alumno_id.delete()
+
+    alumno_id = Alumno.objects.all()
+
+    return render(request , "alumno_formulario.html" , {"alumnos":alumno_id})
+
+
+
+
+def editar_alumno(request , id):
+
+    alumno_id = Alumno.objects.get(id=id)
+
+    if request.method == "POST":
+
+        mi_formulario = alumno_formulario_alta( request.POST )
+        if mi_formulario.is_valid():
+            datos = mi_formulario.cleaned_data
+            alumno_id.alumno_id = datos["alumno_id"]
+            alumno_id.curso_id = datos["curso_id"]
+            alumno_id.save()
+
+            alumno_id = Alumno.objects.all()
+
+            return render(request , "alumno_formulario.html" , {"alumnos":alumno_id})
+
+
+        
+    else:
+        mi_formulario = alumno_formulario_alta(initial={"alumno_id":alumno_id.alumno_id , "curso_id":alumno_id.curso_id})
+    
+    return render( request , "editar_alumno.html" , {"mi_formulario": mi_formulario , "alumno_id":alumno_id})
+
 #VIEWS PROFESORES
 
-def alta_profesores(request,profesor_id,curso_id):
-    profesor= Profesor(profesor= profesor_id , curso_id=curso_id)
-    profesor.save()
-    texto = f"Se guardo en la BD el alumno: {profesor.profesor_id} {profesor.curso_id}"
-    return HttpResponse(texto)
+def alta_profesor(request):
+    if request.method == 'POST':
+        form = profesor_formulario_alta(request.POST)
+        if form.is_valid():
+            profesor_id = form.cleaned_data.get('profesor_id')
+            curso_id = form.cleaned_data.get('curso_id')
+            Profesor.objects.create(profesor_id=profesor_id, curso_id=curso_id)
+            return redirect('alta_profesor')
+        print(form.errors)
+    else:
+        form = profesor_formulario_alta()
+    return render(request, 'profesor_alta.html', {'form': form})
+
 
 def ver_profesores(request):
     profesor = Profesor.objects.all()
@@ -146,12 +201,50 @@ def ver_profesores(request):
 
 def profesores_formulario(request):
     if request.method == "POST":
-        mi_profesor_formulario = Profesor(request.POST)
+        mi_profesor_formulario = profesor_formulario_alta(request.POST)
         if mi_profesor_formulario.is_valid():
-            datos = mi_alumno_formulario.cleaned_data
-            nombre = Profesor(profesor_id=datos["profesor_id"], curso_id=datos["curso_id"])
-            nombre.save()
+            datos = mi_profesor_formulario.cleaned_data
+            profesor = profesor_formulario_alta(profesor_id=datos["profesor_id"], curso_id=datos["curso_id"])
+            profesor.save()
             return render(request, "profesor_formulario.html")
     else:
-        mi_alumno_formulario = Profesor()
+        mi_profesor_formulario = profesor_formulario_alta()
     return render(request, "profesor_formulario.html", {'form': mi_profesor_formulario})
+
+
+
+
+def elimina_profesor(request , id ):
+    profesor_id = Profesor.objects.get(id=id)
+    profesor_id.delete()
+
+    profesor_id = Profesor.objects.all()
+
+    return render(request , "profesor_formulario.html" , {"profesores":profesor_id})
+
+
+
+
+def editar_profesor(request , id):
+
+    profesor_id = Profesor.objects.get(id=id)
+
+    if request.method == "POST":
+
+        mi_formulario = profesor_formulario_alta( request.POST )
+        if mi_formulario.is_valid():
+            datos = mi_formulario.cleaned_data
+            profesor_id.profesor_id = datos["profesor_id"]
+            profesor_id.curso_id = datos["curso_id"]
+            profesor_id.save()
+
+            profesor_id = Profesor.objects.all()
+
+            return render(request , "profesor_formulario.html" , {"profesores": profesor_id})
+
+
+        
+    else:
+        mi_formulario = profesor_formulario_alta(initial={"profesor_id":profesor_id.profesor_id , "curso_id":profesor_id.curso_id})
+    
+    return render( request , "editar_profesor.html" , {"mi_formulario": mi_formulario , "profesor_id": profesor_id})

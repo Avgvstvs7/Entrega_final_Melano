@@ -12,14 +12,14 @@ class Curso(models.Model):
 
 class Profesor(models.Model):
     profesor_id = models.CharField(max_length=100)
-    curso_id = models.ManyToManyField(Curso)
+    curso_id = models.ForeignKey(Curso, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.profesor_id
 
 class Alumno(models.Model):
     alumno_id = models.CharField(max_length=100)
-    curso_id = models.ManyToManyField(Curso)
+    curso_id = models.ForeignKey(Curso, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.alumno_id
